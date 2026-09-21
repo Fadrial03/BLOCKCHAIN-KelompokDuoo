@@ -53,7 +53,7 @@ block = Block(
     previous_hash="0"
 )
 
-difficulty = 4
+difficulty = 5
 
 print("Data Block     :", block.data)
 print("Difficulty     :", difficulty)
