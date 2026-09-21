@@ -1,4 +1,7 @@
 from blockchain import Blockchain
+from block import Block
+from pos import proof_of_stake
+from pow import proof_of_work
 
 blockchain = Blockchain()
 
@@ -32,6 +35,7 @@ blockchain.add_block({
     }
 })
 
+print("=== DAFTAR BLOK DALAM CHAIN ===")
 for block in blockchain.chain:
     print("=" * 50)
     print("INDEX: ", block.index)
@@ -39,4 +43,39 @@ for block in blockchain.chain:
     print("PREV: ", block.previous_hash)
     print("HASH: ", block.hash)
 
-    print("\nBlockchain valid: ", blockchain.is_valid())
+print("\nBlockchain valid: ", blockchain.is_valid())
+
+print("\n" + "=" * 50)
+print("PROOF OF WORK")
+block = Block(
+    index=1,
+    data="Ijazah dari Dosen",
+    previous_hash="0"
+)
+
+difficulty = 4
+
+print("Data Block     :", block.data)
+print("Difficulty     :", difficulty)
+
+proof_of_work(block, difficulty)
+
+print("Nonce          :", block.nonce)
+print("Hash           :", block.hash)
+
+print("\n" + "=" * 50)
+print("PROOF OF STAKE")
+
+validators = {
+    "UINSSC": 40,
+    "Kemdikbud": 30,
+    "LLDIKTI": 20,
+    "Fakultas_Teknik": 10
+}
+
+print("Daftar Validator:")
+for name, stake in validators.items():
+    print(f"- {name}: {stake} stake")
+
+selected = proof_of_stake(validators)
+print("\nValidator terpilih:", selected)

@@ -11,12 +11,12 @@ def proof_of_work(block, difficulty):
 
         block.nonce += 1
         block.hash = hashlib.sha256(
-            {
+            (
                 str(block.index)
-                + block.data
+                + str(block.data)
                 + block.previous_hash
                 + str(block.nonce)
-            }.encode()
+            ).encode()
         ).hexdigest()
 
     end_time = time.time()
