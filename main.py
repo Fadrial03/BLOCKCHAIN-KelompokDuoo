@@ -67,10 +67,10 @@ print("\n" + "=" * 50)
 print("PROOF OF STAKE")
 
 validators = {
-    "UINSSC": 40,
-    "Kemdikbud": 30,
-    "LLDIKTI": 20,
-    "Fakultas_Teknik": 10
+    "UINSSC": 70,
+    "Kemdikbud": 10,
+    "LLDIKTI": 10,
+    "FASTIH": 10
 }
 
 print("Daftar Validator:")
