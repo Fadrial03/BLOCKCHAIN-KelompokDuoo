@@ -1,7 +1,7 @@
+import hashlib
+
 from blockchain import Blockchain
 from block import Block
-from pos import proof_of_stake
-from pow import proof_of_work
 
 blockchain = Blockchain()
 
@@ -31,7 +31,7 @@ blockchain.add_block({
         "ipk": "3.85",
         "universitas": "UINSSC",
         "tanggal_lulus": "2026-09-12",
-        "document_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" # SHA-256 PDF Ijazah
+        "document_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"  # SHA-256 PDF Ijazah
     }
 })
 
@@ -45,37 +45,58 @@ for block in blockchain.chain:
 
 print("\nBlockchain valid: ", blockchain.is_valid())
 
+
+# =====================================================
+# PROOF OF AUTHORITY (menggantikan Proof of Work & Proof of Stake)
+# =====================================================
+
+def sign(block_hash, secret):
+    # Tanda tangan sederhana (simulasi): hash dari hash block + kunci rahasia validator
+    return hashlib.sha256((block_hash + secret).encode()).hexdigest()
+
+
+def proof_of_authority(block, authorities):
+    # Validator dipilih bergantian (round-robin) berdasarkan index block
+    names = list(authorities)
+    proposer = names[block.index % len(names)]
+    signature = sign(block.hash, authorities[proposer])
+    return proposer, signature
+
+
+def verify_authority(block, proposer, signature, authorities):
+    # Block sah jika validator terdaftar dan tanda tangannya cocok
+    if proposer not in authorities:
+        return False
+    return signature == sign(block.hash, authorities[proposer])
+
+
 print("\n" + "=" * 50)
-print("PROOF OF WORK")
+print("PROOF OF AUTHORITY")
+
+authorities = {
+    "UINSSC": "kunci-uinssc",
+    "Kemdikbud": "kunci-kemdikbud",
+    "LLDIKTI": "kunci-lldikti",
+    "FASTIH": "kunci-fastih"
+}
+
+print("Daftar Validator (Authority):")
+for name in authorities:
+    print(f"- {name}")
+
 block = Block(
     index=1,
-    data="Ijazah dari Dosen",
+    data={"message": "Ijazah dari Dosen"},
     previous_hash="0"
 )
 
-difficulty = 5
+proposer, signature = proof_of_authority(block, authorities)
 
-print("Data Block     :", block.data)
-print("Difficulty     :", difficulty)
+print("\nData Block         :", block.data)
+print("Validator terpilih :", proposer)
+print("Tanda tangan       :", signature)
+print("Block disetujui    :", verify_authority(block, proposer, signature, authorities))
 
-proof_of_work(block, difficulty)
-
-print("Nonce          :", block.nonce)
-print("Hash           :", block.hash)
-
-print("\n" + "=" * 50)
-print("PROOF OF STAKE")
-
-validators = {
-    "UINSSC": 70,
-    "Kemdikbud": 10,
-    "LLDIKTI": 10,
-    "FASTIH": 10
-}
-
-print("Daftar Validator:")
-for name, stake in validators.items():
-    print(f"- {name}: {stake} stake")
-
-selected = proof_of_stake(validators)
-print("\nValidator terpilih:", selected)
+print("\n--- Simulasi serangan ---")
+print("Validator palsu    :", verify_authority(block, "Hacker", signature, authorities))
+print("Tanda tangan palsu :", verify_authority(block, proposer, "tanda-tangan-palsu", authorities))
